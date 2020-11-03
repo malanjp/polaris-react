@@ -1,6 +1,7 @@
 import React, {PureComponent, Children, createRef} from 'react';
 import {durationBase} from '@shopify/polaris-tokens';
 
+import {findFirstFocusableNode} from '../../../../utilities/focus';
 import {InversableColorScheme, ThemeProvider} from '../../../ThemeProvider';
 import {classNames} from '../../../../utilities/css';
 import {
@@ -169,7 +170,8 @@ export class PopoverOverlay extends PureComponent<PopoverOverlayProps, State> {
         return;
       }
 
-      this.contentNode.current.focus({
+      const focusableChild = findFirstFocusableNode(this.contentNode.current);
+      (focusableChild || this.contentNode.current).focus({
         preventScroll: process.env.NODE_ENV === 'development',
       });
     });
