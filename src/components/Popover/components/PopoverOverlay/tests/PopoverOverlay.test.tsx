@@ -5,6 +5,7 @@ import {
   ReactWrapper,
   trigger,
 } from 'test-utilities/legacy';
+import {mountWithApp} from 'test-utilities/react-testing';
 import {TextContainer, TextField, EventListener} from 'components';
 
 import {Key} from '../../../../../types';
@@ -363,6 +364,32 @@ describe('<PopoverOverlay />', () => {
 
       expect(focusSpy).toHaveBeenCalledTimes(1);
       expect(focusSpy).toHaveBeenCalledWith({preventScroll: true});
+    });
+
+    it('focuses the first focusbale element on mount', () => {
+      const popoverOverlay = mountWithApp(
+        <PopoverOverlay
+          active
+          id="PopoverOverlay-1"
+          activator={activator}
+          onClose={noop}
+        >
+          <input type="text" />
+        </PopoverOverlay>,
+      );
+
+      const focusTarget = popoverOverlay.find('input', {})!.domNode;
+      expect(document.activeElement).toBe(focusTarget);
+    });
+
+    it('focuses the overlay on mount when there is no focusbale element', () => {
+      const id = 'PopoverOverlay-1';
+      const popoverOverlay = mountWithApp(
+        <PopoverOverlay active id={id} activator={activator} onClose={noop} />,
+      );
+
+      const focusTarget = popoverOverlay.find('div', {id})!.domNode;
+      expect(document.activeElement).toBe(focusTarget);
     });
   });
 });
