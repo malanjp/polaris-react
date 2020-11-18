@@ -71,8 +71,7 @@ export function Actions({actions = [], groups = []}: Props) {
     if (
       !newDesignLanguage ||
       actionWidthsRef.current.length === 0 ||
-      availableWidthRef.current === 0 ||
-      hasMeasured.current
+      availableWidthRef.current === 0
     ) {
       return;
     }
@@ -81,6 +80,23 @@ export function Actions({actions = [], groups = []}: Props) {
 
     if (actionsAndGroups.length === 1) {
       setMeasuredActions({showable: actionsAndGroups, rolledUp: []});
+      return;
+    }
+
+    if (
+      hasMeasured.current === true &&
+      actionsAndGroups.length ===
+        measuredActions.showable.length + measuredActions.rolledUp.length
+    ) {
+      const showable = actionsAndGroups.slice(
+        0,
+        measuredActions.showable.length,
+      );
+      const rolledUp = actionsAndGroups.slice(
+        measuredActions.showable.length,
+        actionsAndGroups.length,
+      );
+      setMeasuredActions({showable, rolledUp});
       return;
     }
 
@@ -115,7 +131,15 @@ export function Actions({actions = [], groups = []}: Props) {
 
     // Set hasMeasured to true to prevent re-renders until viewport has been resized
     hasMeasured.current = true;
-  }, [actions, groups, lastMenuGroup, lastMenuGroupWidth, newDesignLanguage]);
+  }, [
+    actions,
+    groups,
+    lastMenuGroup,
+    lastMenuGroupWidth,
+    measuredActions.rolledUp.length,
+    measuredActions.showable.length,
+    newDesignLanguage,
+  ]);
 
   const handleResize = useMemo(
     () =>
