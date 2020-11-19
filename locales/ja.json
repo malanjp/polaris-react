@@ -293,6 +293,9 @@
     },
     "Actions": {
       "moreActions": "その他の操作"
+    },
+    "TooltipOverlay": {
+      "accessibilitylabel": "ツールチップ: {label}"
     }
   }
 }
