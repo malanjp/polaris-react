@@ -293,6 +293,9 @@
     },
     "Actions": {
       "moreActions": "Más acciones"
+    },
+    "TooltipOverlay": {
+      "accessibilitylabel": "Descripción emergente: {label}"
     }
   }
 }
