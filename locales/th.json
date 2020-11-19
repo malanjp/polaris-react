@@ -293,6 +293,9 @@
     },
     "Actions": {
       "moreActions": "การดำเนินการเพิ่มเติม"
+    },
+    "TooltipOverlay": {
+      "accessibilitylabel": "เคล็ดลับเกี่ยวกับเครื่องมือ: {label}"
     }
   }
 }
