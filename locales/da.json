@@ -293,6 +293,9 @@
     },
     "Actions": {
       "moreActions": "Flere handlinger"
+    },
+    "TooltipOverlay": {
+      "accessibilitylabel": "Værktøjstip: {label}"
     }
   }
 }
