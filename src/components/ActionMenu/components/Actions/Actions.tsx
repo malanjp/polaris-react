@@ -68,6 +68,26 @@ export function Actions({actions = [], groups = []}: Props) {
     [],
   );
 
+  const reRenderActions = useCallback(() => {
+    let actionsAndGroups = [...actions, ...groups];
+
+    if (groups.length > 0) {
+      // We don't want to include actions from the last group
+      // since it is always rendered with its own actions
+      actionsAndGroups = [...actionsAndGroups].slice(
+        0,
+        actionsAndGroups.length - 1,
+      );
+    }
+    const showable = actionsAndGroups.slice(0, measuredActions.showable.length);
+    const rolledUp = actionsAndGroups.slice(
+      measuredActions.showable.length,
+      actionsAndGroups.length,
+    );
+
+    setMeasuredActions({showable, rolledUp});
+  }, [actions, groups, measuredActions.showable.length]);
+
   const measureActions = useCallback(() => {
     if (
       !newDesignLanguage ||
@@ -77,34 +97,10 @@ export function Actions({actions = [], groups = []}: Props) {
       return;
     }
 
-    let actionsAndGroups = [...actions, ...groups];
+    const actionsAndGroups = [...actions, ...groups];
 
     if (actionsAndGroups.length === 1) {
       setMeasuredActions({showable: actionsAndGroups, rolledUp: []});
-      return;
-    }
-
-    if (
-      hasMeasured.current === true &&
-      actionsAndGroups.length === actionsAndGroupsLengthRef.current
-    ) {
-      console.log('no measure');
-      if (groups.length > 0) {
-        actionsAndGroups = [...actionsAndGroups].slice(
-          0,
-          actionsAndGroups.length - 1,
-        );
-      }
-      const showable = actionsAndGroups.slice(
-        0,
-        measuredActions.showable.length,
-      );
-      const rolledUp = actionsAndGroups.slice(
-        measuredActions.showable.length,
-        actionsAndGroups.length,
-      );
-
-      setMeasuredActions({showable, rolledUp});
       return;
     }
 
@@ -131,7 +127,7 @@ export function Actions({actions = [], groups = []}: Props) {
         newRolledUpActions = [...newRolledUpActions, action];
       }
     });
-    console.log('measure');
+
     setMeasuredActions({
       showable: newShowableActions,
       rolledUp: newRolledUpActions,
@@ -140,14 +136,7 @@ export function Actions({actions = [], groups = []}: Props) {
     // Set hasMeasured to true to prevent re-renders until viewport has been resized or props change
     hasMeasured.current = true;
     actionsAndGroupsLengthRef.current = actionsAndGroups.length;
-  }, [
-    actions,
-    groups,
-    lastMenuGroup,
-    lastMenuGroupWidth,
-    measuredActions.showable.length,
-    newDesignLanguage,
-  ]);
+  }, [actions, groups, lastMenuGroup, lastMenuGroupWidth, newDesignLanguage]);
 
   const handleResize = useMemo(
     () =>
@@ -171,8 +160,15 @@ export function Actions({actions = [], groups = []}: Props) {
     }
 
     availableWidthRef.current = actionsLayoutRef.current.offsetWidth;
+    if (
+      hasMeasured.current === true &&
+      [...actions, ...groups].length === actionsAndGroupsLengthRef.current
+    ) {
+      reRenderActions();
+      return;
+    }
     measureActions();
-  }, [measureActions]);
+  }, [actions, groups, measureActions, reRenderActions]);
 
   const className = classNames(
     styles.ActionsLayout,
@@ -223,77 +219,76 @@ export function Actions({actions = [], groups = []}: Props) {
         )
       : null;
 
-  const groupsMarkup = [...groups, defaultRollupGroup]
-    .filter((group) => {
-      return groups.length === 0
-        ? group
-        : group === lastMenuGroup ||
-            !measuredActions.rolledUp.some(
-              (rolledUpGroup) =>
-                isMenuGroup(rolledUpGroup) &&
-                rolledUpGroup.title === group.title,
-            );
-    })
-    .map((group) => {
-      const {title, actions: groupActions, ...rest} = group;
-      const isDefaultGroup = group === defaultRollupGroup;
-      const isLastMenuGroup = group === lastMenuGroup;
-      const finalRolledUpActions = measuredActions.rolledUp.reduce(
-        (memo, action) => {
-          memo.push(...(isMenuGroup(action) ? action.actions : [action]));
+  const filteredGroups = [...groups, defaultRollupGroup].filter((group) => {
+    return groups.length === 0
+      ? group
+      : group === lastMenuGroup ||
+          !measuredActions.rolledUp.some(
+            (rolledUpGroup) =>
+              isMenuGroup(rolledUpGroup) && rolledUpGroup.title === group.title,
+          );
+  });
 
-          return memo;
-        },
-        [] as ActionListItemDescriptor[],
+  const groupsMarkup = filteredGroups.map((group) => {
+    const {title, actions: groupActions, ...rest} = group;
+    const isDefaultGroup = group === defaultRollupGroup;
+    const isLastMenuGroup = group === lastMenuGroup;
+    const finalRolledUpActions = measuredActions.rolledUp.reduce(
+      (memo, action) => {
+        memo.push(...(isMenuGroup(action) ? action.actions : [action]));
+
+        return memo;
+      },
+      [] as ActionListItemDescriptor[],
+    );
+    if (!isDefaultGroup && !isLastMenuGroup) {
+      // Render a normal MenuGroup with just its actions
+      return (
+        <MenuGroup
+          key={title}
+          title={title}
+          active={title === activeMenuGroup}
+          actions={groupActions}
+          {...rest}
+          onOpen={handleMenuGroupToggle}
+          onClose={handleMenuGroupClose}
+          getOffsetWidth={handleActionsOffsetWidth}
+        />
       );
-      if (!isDefaultGroup && !isLastMenuGroup) {
-        // Render a normal group with just its actions
-        return (
-          <MenuGroup
-            key={title}
-            title={title}
-            active={title === activeMenuGroup}
-            actions={groupActions}
-            {...rest}
-            onOpen={handleMenuGroupToggle}
-            onClose={handleMenuGroupClose}
-            getOffsetWidth={handleActionsOffsetWidth}
-          />
-        );
-      } else if (!isDefaultGroup && isLastMenuGroup) {
-        // render the last group
-        return (
-          <MenuGroup
-            key={title}
-            title={title}
-            active={title === activeMenuGroup}
-            actions={[...finalRolledUpActions, ...groupActions]}
-            {...rest}
-            onOpen={handleMenuGroupToggle}
-            onClose={handleMenuGroupClose}
-            getOffsetWidth={handleActionsOffsetWidth}
-          />
-        );
-      } else if (
-        isDefaultGroup &&
-        groups.length === 0 &&
-        finalRolledUpActions.length
-      ) {
-        // Render the default group to rollup into if one does not exist
-        return (
-          <MenuGroup
-            key={title}
-            title={title}
-            active={title === activeMenuGroup}
-            actions={finalRolledUpActions}
-            {...rest}
-            onOpen={handleMenuGroupToggle}
-            onClose={handleMenuGroupClose}
-            getOffsetWidth={handleActionsOffsetWidth}
-          />
-        );
-      }
-    });
+    } else if (!isDefaultGroup && isLastMenuGroup) {
+      // render the last, rollup group with its actions and finalRolledupActions
+      return (
+        <MenuGroup
+          key={title}
+          title={title}
+          active={title === activeMenuGroup}
+          actions={[...finalRolledUpActions, ...groupActions]}
+          {...rest}
+          onOpen={handleMenuGroupToggle}
+          onClose={handleMenuGroupClose}
+          getOffsetWidth={handleActionsOffsetWidth}
+        />
+      );
+    } else if (
+      isDefaultGroup &&
+      groups.length === 0 &&
+      finalRolledUpActions.length
+    ) {
+      // Render the default group to rollup into if one does not exist
+      return (
+        <MenuGroup
+          key={title}
+          title={title}
+          active={title === activeMenuGroup}
+          actions={finalRolledUpActions}
+          {...rest}
+          onOpen={handleMenuGroupToggle}
+          onClose={handleMenuGroupClose}
+          getOffsetWidth={handleActionsOffsetWidth}
+        />
+      );
+    }
+  });
 
   const groupedActionsMarkup = newDesignLanguage ? (
     <ButtonGroup spacing="extraTight">
