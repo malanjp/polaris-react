@@ -37,6 +37,7 @@ export function Actions({actions = [], groups = []}: Props) {
   const actionsLayoutRef = useRef<HTMLDivElement>(null);
   const menuGroupWidthRef = useRef<number>(0);
   const availableWidthRef = useRef<number>(0);
+  const actionsAndGroupsLengthRef = useRef<number>(0);
   const hasMeasured = useRef<boolean>(false);
   const actionWidthsRef = useRef<number[]>([]);
   const [activeMenuGroup, setActiveMenuGroup] = useState<string | undefined>(
@@ -76,7 +77,7 @@ export function Actions({actions = [], groups = []}: Props) {
       return;
     }
 
-    const actionsAndGroups = [...actions, ...groups];
+    let actionsAndGroups = [...actions, ...groups];
 
     if (actionsAndGroups.length === 1) {
       setMeasuredActions({showable: actionsAndGroups, rolledUp: []});
@@ -85,9 +86,15 @@ export function Actions({actions = [], groups = []}: Props) {
 
     if (
       hasMeasured.current === true &&
-      actionsAndGroups.length ===
-        measuredActions.showable.length + measuredActions.rolledUp.length
+      actionsAndGroups.length === actionsAndGroupsLengthRef.current
     ) {
+      console.log('no measure');
+      if (groups.length > 0) {
+        actionsAndGroups = [...actionsAndGroups].slice(
+          0,
+          actionsAndGroups.length - 1,
+        );
+      }
       const showable = actionsAndGroups.slice(
         0,
         measuredActions.showable.length,
@@ -96,6 +103,7 @@ export function Actions({actions = [], groups = []}: Props) {
         measuredActions.showable.length,
         actionsAndGroups.length,
       );
+
       setMeasuredActions({showable, rolledUp});
       return;
     }
@@ -123,20 +131,20 @@ export function Actions({actions = [], groups = []}: Props) {
         newRolledUpActions = [...newRolledUpActions, action];
       }
     });
-
+    console.log('measure');
     setMeasuredActions({
       showable: newShowableActions,
       rolledUp: newRolledUpActions,
     });
 
-    // Set hasMeasured to true to prevent re-renders until viewport has been resized
+    // Set hasMeasured to true to prevent re-renders until viewport has been resized or props change
     hasMeasured.current = true;
+    actionsAndGroupsLengthRef.current = actionsAndGroups.length;
   }, [
     actions,
     groups,
     lastMenuGroup,
     lastMenuGroupWidth,
-    measuredActions.rolledUp.length,
     measuredActions.showable.length,
     newDesignLanguage,
   ]);
@@ -217,7 +225,7 @@ export function Actions({actions = [], groups = []}: Props) {
 
   const groupsMarkup = [...groups, defaultRollupGroup]
     .filter((group) => {
-      return groups.length === 0 && group === defaultRollupGroup
+      return groups.length === 0
         ? group
         : group === lastMenuGroup ||
             !measuredActions.rolledUp.some(
@@ -228,6 +236,8 @@ export function Actions({actions = [], groups = []}: Props) {
     })
     .map((group) => {
       const {title, actions: groupActions, ...rest} = group;
+      const isDefaultGroup = group === defaultRollupGroup;
+      const isLastMenuGroup = group === lastMenuGroup;
       const finalRolledUpActions = measuredActions.rolledUp.reduce(
         (memo, action) => {
           memo.push(...(isMenuGroup(action) ? action.actions : [action]));
@@ -236,23 +246,28 @@ export function Actions({actions = [], groups = []}: Props) {
         },
         [] as ActionListItemDescriptor[],
       );
-
-      const isDefaultGroup = group === defaultRollupGroup;
-
-      if (
-        isDefaultGroup &&
-        groups.length === 0 &&
-        finalRolledUpActions.length > 0
-      ) {
+      if (!isDefaultGroup && !isLastMenuGroup) {
+        // Render a normal group with just its actions
         return (
           <MenuGroup
             key={title}
             title={title}
             active={title === activeMenuGroup}
-            actions={[
-              ...(finalRolledUpActions || actions),
-              ...(!isDefaultGroup ? groupActions : []),
-            ]}
+            actions={groupActions}
+            {...rest}
+            onOpen={handleMenuGroupToggle}
+            onClose={handleMenuGroupClose}
+            getOffsetWidth={handleActionsOffsetWidth}
+          />
+        );
+      } else if (!isDefaultGroup && isLastMenuGroup) {
+        // render the last group
+        return (
+          <MenuGroup
+            key={title}
+            title={title}
+            active={title === activeMenuGroup}
+            actions={[...finalRolledUpActions, ...groupActions]}
             {...rest}
             onOpen={handleMenuGroupToggle}
             onClose={handleMenuGroupClose}
@@ -260,18 +275,17 @@ export function Actions({actions = [], groups = []}: Props) {
           />
         );
       } else if (
-        !isDefaultGroup &&
-        (groups.length > 0 || groupActions.length || actions.length)
+        isDefaultGroup &&
+        groups.length === 0 &&
+        finalRolledUpActions.length
       ) {
+        // Render the default group to rollup into if one does not exist
         return (
           <MenuGroup
             key={title}
             title={title}
             active={title === activeMenuGroup}
-            actions={[
-              ...(finalRolledUpActions || actions),
-              ...(!isDefaultGroup ? groupActions : []),
-            ]}
+            actions={finalRolledUpActions}
             {...rest}
             onOpen={handleMenuGroupToggle}
             onClose={handleMenuGroupClose}
