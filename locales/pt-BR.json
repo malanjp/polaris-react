@@ -293,6 +293,9 @@
     },
     "Actions": {
       "moreActions": "Mais ações"
+    },
+    "TooltipOverlay": {
+      "accessibilitylabel": "Dica de ferramenta: {label}"
     }
   }
 }
