@@ -293,6 +293,9 @@
     },
     "Actions": {
       "moreActions": "Lisää toimintoja"
+    },
+    "TooltipOverlay": {
+      "accessibilitylabel": "Työkaluvihje: {label}"
     }
   }
 }
