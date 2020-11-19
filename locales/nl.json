@@ -293,6 +293,9 @@
     },
     "Actions": {
       "moreActions": "Meer acties"
+    },
+    "TooltipOverlay": {
+      "accessibilitylabel": "Knopinfo: {label}"
     }
   }
 }
