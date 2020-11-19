@@ -293,6 +293,9 @@
     },
     "Actions": {
       "moreActions": "Fler åtgärder"
+    },
+    "TooltipOverlay": {
+      "accessibilitylabel": "Verktygstips: {label}"
     }
   }
 }
