@@ -295,6 +295,9 @@
     },
     "Actions": {
       "moreActions": "Więcej czynności"
+    },
+    "TooltipOverlay": {
+      "accessibilitylabel": "Podpowiedź: {label}"
     }
   }
 }
