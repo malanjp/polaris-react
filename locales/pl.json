@@ -297,7 +297,7 @@
       "moreActions": "Więcej czynności"
     },
     "TooltipOverlay": {
-      "accessibilitylabel": "Podpowiedź: {label}"
+      "accessibilitylabel": "Etykietka narzędzia: {label}"
     }
   }
 }
