@@ -295,6 +295,9 @@
     },
     "Actions": {
       "moreActions": "Další akce"
+    },
+    "TooltipOverlay": {
+      "accessibilitylabel": "Tip s vysvětlením: {label}"
     }
   }
 }
