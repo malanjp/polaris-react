@@ -271,21 +271,23 @@ export function TextField({
     );
   }
 
-  const clearButtonMarkup =
-    clearButton && normalizedValue !== '' ? (
-      <button
-        type="button"
-        testID="clearButton"
-        className={styles.ClearButton}
-        onClick={handleClearButtonPress}
-        disabled={disabled}
-      >
-        <VisuallyHidden>
-          {i18n.translate('Polaris.Common.clear')}
-        </VisuallyHidden>
-        <Icon source={CircleCancelMinor} color="inkLightest" />
-      </button>
-    ) : null;
+  const clearButtonClassName = classNames(
+    styles.ClearButton,
+    normalizedValue === '' && styles['ClearButton-hidden'],
+  );
+
+  const clearButtonMarkup = clearButton ? (
+    <button
+      type="button"
+      testID="clearButton"
+      className={clearButtonClassName}
+      onClick={handleClearButtonPress}
+      disabled={disabled}
+    >
+      <VisuallyHidden>{i18n.translate('Polaris.Common.clear')}</VisuallyHidden>
+      <Icon source={CircleCancelMinor} color="inkLightest" />
+    </button>
+  ) : null;
 
   const handleNumberChange = useCallback(
     (steps: number) => {

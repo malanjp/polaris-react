@@ -13,6 +13,8 @@ Use [the changelog guidelines](https://git.io/polaris-changelog-guidelines) to f
 
 ### Bug fixes
 
+- Fixed `ClearButton` in `TextField` unintentionally closing `Popover` when clicked ([#3688](https://github.com/Shopify/polaris-react/pull/3688))
+- Added focus styles to `ClearButton` in `TextField` ([#3688](https://github.com/Shopify/polaris-react/pull/3688))
 - Added dependency list to useImperativeHandle in `Banner` ([#3478](https://github.com/Shopify/polaris-react/pull/3478))
 - Internationalize `Badge` labels ([#3655](https://github.com/Shopify/polaris-react/pull/3655))
 - Aligned the `::before` 'indicator' to edge of container for `ActionList` ([#3619](https://github.com/Shopify/polaris-react/pull/3619))

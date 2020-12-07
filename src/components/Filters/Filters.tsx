@@ -231,6 +231,7 @@ class FiltersInner extends Component<CombinedProps, State> {
       <div ref={this.moreFiltersButtonContainer}>
         <Button
           onClick={this.toggleFilters}
+          id="SheetToggleButton"
           testID="SheetToggleButton"
           disabled={disabled}
         >
