@@ -26,8 +26,7 @@ $selected-option-identifier-width: rem(3px);
   }
 }
 
-.Label,
-.SingleSelectOption {
+.Label {
   display: flex;
   align-items: flex-start;
   width: 100%;
@@ -93,29 +92,11 @@ $selected-option-identifier-width: rem(3px);
   }
 
   .select {
+    box-shadow: inset 0.2rem 0 0 color('indigo');
     background-image: linear-gradient(
       rgba(179, 188, 245, 0.15),
       rgba(179, 188, 245, 0.15)
     );
-
-    &.focused {
-      box-shadow: inset 0.2rem 0 0 color('indigo');
-      background-image: linear-gradient(
-          rgba(179, 188, 245, 0.15),
-          rgba(179, 188, 245, 0.15)
-        ),
-        linear-gradient(rgba(223, 227, 232, 0.3), rgba(223, 227, 232, 0.3));
-
-      &:hover {
-        box-shadow: inset 0.2rem 0 0 color('indigo');
-        background-image: linear-gradient(
-            rgba(179, 188, 245, 0.15),
-            rgba(179, 188, 245, 0.15)
-          ),
-          linear-gradient(rgba(223, 227, 232, 0.3), rgba(223, 227, 232, 0.3)),
-          linear-gradient(rgba(223, 227, 232, 0.3), rgba(223, 227, 232, 0.3));
-      }
-    }
   }
 
   .active {
@@ -130,11 +111,9 @@ $selected-option-identifier-width: rem(3px);
   border-radius: var(--p-border-radius-base);
   margin-top: spacing(tight) / 2;
 
-  .Label,
-  .SingleSelectOption {
+  .Label {
     cursor: pointer;
     border-radius: var(--p-border-radius-base);
-    padding: spacing(tight);
 
     &:hover:not(.disabled) {
       background: var(--p-surface-hovered);
@@ -156,24 +135,24 @@ $selected-option-identifier-width: rem(3px);
   }
 
   .SingleSelectOption {
-    @include focus-ring;
-
-    &.active,
-    &.focused:not(:active) {
-      @include focus-ring($style: 'focused');
+    [type='radio'] + label {
+      @include focus-ring;
+      &.select::before {
+        background: var(--p-interactive);
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -1 * spacing(tight);
+        height: 100%;
+        display: block;
+        width: $selected-option-identifier-width;
+        border-top-right-radius: var(--p-border-radius-base);
+        border-bottom-right-radius: var(--p-border-radius-base);
+      }
     }
-
-    &.select::before {
-      background: var(--p-interactive);
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -1 * spacing(tight);
-      height: 100%;
-      display: block;
-      width: $selected-option-identifier-width;
-      border-top-right-radius: var(--p-border-radius-base);
-      border-bottom-right-radius: var(--p-border-radius-base);
+    [type='radio'].active + label,
+    [type='radio']:focus:not(:active) + label {
+      @include focus-ring($style: 'focused');
     }
   }
 }
