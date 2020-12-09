@@ -26,11 +26,7 @@ export enum PopoverCloseSource {
   ScrollOut,
 }
 
-export enum PopoverAutofocusTarget {
-  None,
-  Container,
-  FirstNode,
-}
+export type PopoverAutofocusTarget = 'none' | 'first-node' | 'container';
 
 enum TransitionStatus {
   Entering = 'entering',
@@ -165,12 +161,9 @@ export class PopoverOverlay extends PureComponent<PopoverOverlayProps, State> {
   }
 
   private focusContent() {
-    const {autofocusTarget = PopoverAutofocusTarget.Container} = this.props;
+    const {autofocusTarget = 'container'} = this.props;
 
-    if (
-      this.props.preventAutofocus ||
-      autofocusTarget === PopoverAutofocusTarget.None
-    ) {
+    if (this.props.preventAutofocus || autofocusTarget === 'none') {
       return;
     }
     if (this.contentNode == null) {
@@ -184,10 +177,7 @@ export class PopoverOverlay extends PureComponent<PopoverOverlayProps, State> {
 
       const focusableChild = findFirstFocusableNode(this.contentNode.current);
 
-      if (
-        focusableChild &&
-        autofocusTarget === PopoverAutofocusTarget.FirstNode
-      ) {
+      if (focusableChild && autofocusTarget === 'first-node') {
         focusableChild.focus({
           preventScroll: process.env.NODE_ENV === 'development',
         });

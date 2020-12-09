@@ -26,7 +26,8 @@ import {
 } from './components';
 import {setActivatorAttributes} from './set-activator-attributes';
 
-export {PopoverCloseSource, PopoverAutofocusTarget};
+export {PopoverCloseSource};
+export type {PopoverAutofocusTarget};
 
 export interface PopoverProps {
   /** The content to display inside the popover */
@@ -73,7 +74,7 @@ export interface PopoverProps {
   colorScheme?: InversableColorScheme;
   /**
    * The preferred auto focus target defaulting to the popover container
-   * @default PopoverAutofocusTarget.Container
+   * @default 'container'
    */
   autofocusTarget?: PopoverAutofocusTarget;
 }
