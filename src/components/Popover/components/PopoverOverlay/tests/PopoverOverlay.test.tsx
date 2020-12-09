@@ -10,7 +10,7 @@ import {TextContainer, TextField, EventListener} from 'components';
 
 import {Key} from '../../../../../types';
 import {PositionedOverlay} from '../../../../PositionedOverlay';
-import {PopoverAutofocusTarget, PopoverOverlay} from '../PopoverOverlay';
+import {PopoverOverlay} from '../PopoverOverlay';
 
 interface HandlerMap {
   [eventName: string]: (event: any) => void;
@@ -384,7 +384,7 @@ describe('<PopoverOverlay />', () => {
           id={id}
           activator={activator}
           onClose={noop}
-          autofocusTarget={PopoverAutofocusTarget.Container}
+          autofocusTarget="container"
         />,
       );
 
@@ -399,7 +399,7 @@ describe('<PopoverOverlay />', () => {
           id="PopoverOverlay-1"
           activator={activator}
           onClose={noop}
-          autofocusTarget={PopoverAutofocusTarget.FirstNode}
+          autofocusTarget="first-node"
         >
           <input type="text" />
         </PopoverOverlay>,
@@ -417,7 +417,7 @@ describe('<PopoverOverlay />', () => {
           id={id}
           activator={activator}
           onClose={noop}
-          autofocusTarget={PopoverAutofocusTarget.None}
+          autofocusTarget="none"
         >
           <input type="text" />
         </PopoverOverlay>,
