@@ -377,7 +377,11 @@ describe('<Filters />', () => {
 
     it('renders visually hidden if applied filters are not provided', () => {
       const resourceFilters = mountWithApp(<Filters {...mockProps} />);
-      expect(resourceFilters).toContainReactComponentTimes(VisuallyHidden, 1);
+      expect(
+        resourceFilters.find('span', {
+          testID: 'tagsContainer',
+        }),
+      ).toContainReactComponentTimes(VisuallyHidden, 1);
     });
 
     it('renders applied filters container with aria live', () => {

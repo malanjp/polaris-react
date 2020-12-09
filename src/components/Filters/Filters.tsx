@@ -431,7 +431,7 @@ class FiltersInner extends Component<CombinedProps, State> {
         <div className={styles.Filters}>
           {filtersControlMarkup}
           {filtersContainerMarkup}
-          {tagsMarkup}
+          <span testID="tagsContainer">{tagsMarkup}</span>
           {helpTextMarkup}
           {backdropMarkup}
           <KeypressListener keyCode={Key.Escape} handler={this.closeFilters} />
