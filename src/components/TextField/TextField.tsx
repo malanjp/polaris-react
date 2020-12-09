@@ -271,9 +271,10 @@ export function TextField({
     );
   }
 
+  const clearButtonVisible = normalizedValue !== '';
   const clearButtonClassName = classNames(
     styles.ClearButton,
-    normalizedValue === '' && styles['ClearButton-hidden'],
+    !clearButtonVisible && styles['ClearButton-hidden'],
   );
 
   const clearButtonMarkup = clearButton ? (
@@ -283,6 +284,7 @@ export function TextField({
       className={clearButtonClassName}
       onClick={handleClearButtonPress}
       disabled={disabled}
+      tabIndex={clearButtonVisible ? 0 : -1}
     >
       <VisuallyHidden>{i18n.translate('Polaris.Common.clear')}</VisuallyHidden>
       <Icon source={CircleCancelMinor} color="inkLightest" />

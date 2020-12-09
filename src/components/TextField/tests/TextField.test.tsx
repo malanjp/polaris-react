@@ -1084,9 +1084,10 @@ describe('<TextField />', () => {
           clearButton
         />,
       );
-      expect(
-        findByTestID(textField, 'clearButton').hasClass('ClearButton-hidden'),
-      ).toBeTruthy();
+
+      const clearButton = findByTestID(textField, 'clearButton');
+      expect(clearButton.hasClass('ClearButton-hidden')).toBeTruthy();
+      expect(clearButton.prop('tabIndex')).toBe(-1);
     });
 
     it('calls onClearButtonClicked() with an id when the clear button is clicked', () => {
